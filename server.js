@@ -55,6 +55,24 @@ app.post("/api/connect", (req, res, next)=>{
     });
 })
 
+app.post("/api/addChat", (req, res, next)=>{
+    
+    
+    var sql ='INSERT INTO chat (`from`, `to`, `text`, `time`) VALUES (?,?,?,?)'
+    var params =[req.body.from, req.body.to, req.body.text, req.body.time]
+    db.run(sql, params, function (err, result) {
+        if (err){
+            res.status(400).json({"error": err.message})
+            return;
+        }
+        res.json({
+            "message": "success",
+            
+            "id" : this.lastID
+        })
+    });
+})
+
 app.get("/api/users", (req, res, next) => {
     var sql = "select * from user"
     var params = []
@@ -71,7 +89,7 @@ app.get("/api/users", (req, res, next) => {
 });
 
 app.get("/api/user/:id", (req, res, next) => {
-    var sql = "select * from user where id = ?"
+    var sql = "select * from user where email = ?"
     var params = [req.params.id]
     db.get(sql, params, (err, row) => {
         if (err) {
@@ -156,6 +174,22 @@ app.post("/api/user/", (req, res, next) => {
 app.get("/api/getConnection/:email", (req, res, next) =>{
     var sql = "select * from connection where `user1` = ?"
     var params = [req.params.email]
+    db.all(sql, params, (err, rows) => {
+        if (err) {
+          res.status(200).json({"error":err.message});
+          return;
+        }
+        let records=[];
+        rows.forEach((row) =>records.push(row));
+        res.json({
+            "message":"success",
+            "data":records
+        })
+      });
+})
+app.get("/api/msg/:from/:to", (req, res, next) =>{
+    var sql = "select * from chat where ((( `from` = ?) and (`to` = ?) ) or (( `from` = ?) and (`to` = ?)))"
+    var params = [req.params.from,req.params.to,req.params.to,req.params.from]
     db.all(sql, params, (err, rows) => {
         if (err) {
           res.status(200).json({"error":err.message});

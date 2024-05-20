@@ -10,7 +10,12 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
       throw err
     }else{
         console.log('Connected to the SQLite database.')
-        db.run(`CREATE TABLE user (
+        
+        
+        
+        
+        db.run(`
+        CREATE TABLE user (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name text, 
             email text UNIQUE, 
@@ -23,6 +28,14 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
             user1 text,
             user2 text,
             last_commit text
+            );
+
+            CREATE TABLE chat (
+                \`id\` INTEGER PRIMARY KEY AUTOINCREMENT,
+                \`from\` text,
+                \`to\` text,
+                \`text\` text,
+                \`time\` INTEGER
             );
             
             
@@ -37,8 +50,9 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 var insert = 'INSERT INTO user (name, email, password) VALUES (?,?,?)'
                 db.run(insert, ["admin","admin@example.com",md5("admin123456")])
                 db.run(insert, ["user","user@example.com",md5("user123456")])
-                
                 db.run("INSERT INTO connection (user1, user2, last_commit) VALUES (?, ?, ?)",["admin@example.com","user@example.com","12345678910"]) 
+                db.run("INSERT INTO chat (`from`, `to`, `text`, `time`) VALUES (?, ?, ?, ?)",["rafiz","rafiz@chatfiz.com","Hellow...", 123456789]) 
+                
             }
         });  
     }
